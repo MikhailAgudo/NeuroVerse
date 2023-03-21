@@ -1,0 +1,13 @@
+.idea/
+logs/
+*.iml
+ngrok
+ngrok-stable-linux-amd64.zip
+/ROBEX/
+config.json
+**/__pycache__/
+.ipynb_checkpoints/
+I2O/
+content/
+modules/
+path/
