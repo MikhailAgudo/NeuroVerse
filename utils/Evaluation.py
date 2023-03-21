@@ -299,26 +299,34 @@ def _evaluate(datasetObj, modelObj, sampleDir, options, split="TEST"):
                     _eval_dict['labelmaps'] += [np.squeeze(labelmaps)]
                     _eval_dict['l1reconstructionErrors'] += [l1err]
                     _eval_dict['l2reconstructionErrors'] += [l2err]
-                    imwrite(os.path.join(sampleDir, '{}_{}.png'.format(p, s)), normalize_and_squeeze(x))
-                    imwrite(os.path.join(sampleDir, '{}_{}_rec.png'.format(p, s)), normalize_and_squeeze(x_rec))
-                    imwrite(os.path.join(sampleDir, '{}_{}_gt.png'.format(p, s)), normalize_and_squeeze(labelmaps))  # check if normalization is useful
-                    imwrite(os.path.join(sampleDir, '{}_{}_diff.png'.format(p, s)), normalize_and_squeeze(x_diff))
-                    imwrite(os.path.join(sampleDir, '{}_{}_rec_variance_combined.png'.format(p, s)),
-                            np.squeeze(utils.apply_colormap(x_recs_var, plt.cm.jet)))
-                    if x_log_vars.size > 0:
-                        imwrite(os.path.join(sampleDir, '{}_{}_logvar.png'.format(p, s)), normalize_and_squeeze(np.mean(x_log_vars, axis=0)))
+
+                    patient_dir = os.path.join(sampleDir, str(p))
+                    if not os.path.exists(patient_dir):
+                        os.makedirs(patient_dir)
+
+                    # 2023-03-22-0319 Commented to make the prediction more obvious and visible.
+                    imwrite(os.path.join(patient_dir, '{}_{}.png'.format(p, s)), normalize_and_squeeze(x))
+                    # imwrite(os.path.join(sampleDir, '{}_{}_rec.png'.format(p, s)), normalize_and_squeeze(x_rec))
+                    # imwrite(os.path.join(sampleDir, '{}_{}_gt.png'.format(p, s)), normalize_and_squeeze(labelmaps))  # check if normalization is useful
+                    # imwrite(os.path.join(sampleDir, '{}_{}_diff.png'.format(p, s)), normalize_and_squeeze(x_diff))
+                    # imwrite(os.path.join(sampleDir, '{}_{}_rec_variance_combined.png'.format(p, s)),
+                    #        np.squeeze(utils.apply_colormap(x_recs_var, plt.cm.jet)))
+                    # if x_log_vars.size > 0:
+                    #     imwrite(os.path.join(sampleDir, '{}_{}_logvar.png'.format(p, s)), normalize_and_squeeze(np.mean(x_log_vars, axis=0)))
 
                 if should(options, "medianFiltering"):
                     subvolume = apply_3d_median_filter(subvolume)
 
                 _eval_dict['diffs'] += [subvolume]
 
-                for s in range(datasetObj.options.sliceStart, min(datasetObj.options.sliceEnd, nii.num_slices_along_axis(datasetObj.options.axis))):
-                    imwrite(os.path.join(sampleDir, '{}_{}_diff_filtered.png'.format(p, s)),
-                            normalize_and_squeeze(subvolume[s - datasetObj.options.sliceStart]))
-                    squashed = squash_intensities(np.squeeze(subvolume[s - datasetObj.options.sliceStart]))
-                    squashed = add_colorbar(squashed)
-                    imwrite(os.path.join(sampleDir, '{}_{}_heatmap.png'.format(p, s)), np.squeeze(utils.apply_colormap(squashed, plt.cm.jet)))
+                # 2023-03-22-0322 Commented to make prediction image more obvious and visible.
+
+                # for s in range(datasetObj.options.sliceStart, min(datasetObj.options.sliceEnd, nii.num_slices_along_axis(datasetObj.options.axis))):
+                #     imwrite(os.path.join(sampleDir, '{}_{}_diff_filtered.png'.format(p, s)),
+                #             normalize_and_squeeze(subvolume[s - datasetObj.options.sliceStart]))
+                #     squashed = squash_intensities(np.squeeze(subvolume[s - datasetObj.options.sliceStart]))
+                #     squashed = add_colorbar(squashed)
+                #     imwrite(os.path.join(sampleDir, '{}_{}_heatmap.png'.format(p, s)), np.squeeze(utils.apply_colormap(squashed, plt.cm.jet)))
 
                 if should(options, "exportVolumes"):
                     dezoom_factor = tuple([1]) + tuple(1 / np.asarray(zoom_factor))
@@ -504,7 +512,12 @@ def evaluate(datasetPC, gan, options, epoch='last', description=None):
                                                                       eval_pc['labelmaps'][idx])
         p = math.floor(float(idx) / num_slices)
         s = datasetPC.options.sliceStart + (idx % (datasetPC.options.sliceEnd - datasetPC.options.sliceStart))
-        imwrite(os.path.join(sample_dir, '{}_{}_vis.png'.format(p, s)), np.squeeze(cv2.normalize(tmp, None, 0, 255)).astype('uint8'))
+
+        patient_dir = os.path.join(sample_dir, str(p))
+        if not os.path.exists(patient_dir):
+            os.makedirs(patient_dir)
+        
+        imwrite(os.path.join(patient_dir, 'vis_{}_{}.png'.format(p, s)), np.squeeze(cv2.normalize(tmp, None, 0, 255)).astype('uint8'))
 
     # Store evalPC to disk
 
