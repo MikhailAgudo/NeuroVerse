@@ -14,7 +14,6 @@ from utils.default_config_setup import get_config, get_options, get_datasets, Da
 
 base_path = os.path.dirname(os.path.abspath(__file__))
 
-
 def main(args):
     # reset default graph
     tf.reset_default_graph()
