@@ -4,6 +4,6 @@
   "MSSEG2008DIR": "path/to/MSSEG2008",
   "MSISBI2015DIR": "path/to/ISBIMSlesionChallenge",
   "MSLUBDIR": "path/to/MSlub",
-  "CHECKPOINTDIR": "path/to/saved/checkpoints",
-  "SAMPLEDIR": "path/to/saved/sample_dir"
+  "CHECKPOINTDIR": "saved/checkpoints",
+  "SAMPLEDIR": "saved/outputs"
 }
