@@ -321,12 +321,17 @@ def _evaluate(datasetObj, modelObj, sampleDir, options, split="TEST"):
 
                 # 2023-03-22-0322 Commented to make prediction image more obvious and visible.
 
-                # for s in range(datasetObj.options.sliceStart, min(datasetObj.options.sliceEnd, nii.num_slices_along_axis(datasetObj.options.axis))):
-                #     imwrite(os.path.join(sampleDir, '{}_{}_diff_filtered.png'.format(p, s)),
-                #             normalize_and_squeeze(subvolume[s - datasetObj.options.sliceStart]))
-                #     squashed = squash_intensities(np.squeeze(subvolume[s - datasetObj.options.sliceStart]))
-                #     squashed = add_colorbar(squashed)
-                #     imwrite(os.path.join(sampleDir, '{}_{}_heatmap.png'.format(p, s)), np.squeeze(utils.apply_colormap(squashed, plt.cm.jet)))
+                for s in range(datasetObj.options.sliceStart, min(datasetObj.options.sliceEnd, nii.num_slices_along_axis(datasetObj.options.axis))):
+                    patient_dir = os.path.join(sampleDir, str(p))
+                    if not os.path.exists(patient_dir):
+                        os.makedirs(patient_dir)
+
+                    imwrite(os.path.join(patient_dir, 'diff_filtered_{}_{}.png'.format(p, s)),
+                            normalize_and_squeeze(subvolume[s - datasetObj.options.sliceStart]))
+                    squashed = squash_intensities(np.squeeze(subvolume[s - datasetObj.options.sliceStart]))
+                    squashed = add_colorbar(squashed)
+
+                    imwrite(os.path.join(patient_dir, 'heatmap_{}_{}.png'.format(p, s)), np.squeeze(utils.apply_colormap(squashed, plt.cm.jet)))
 
                 if should(options, "exportVolumes"):
                     dezoom_factor = tuple([1]) + tuple(1 / np.asarray(zoom_factor))
