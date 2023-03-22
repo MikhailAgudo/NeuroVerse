@@ -37,17 +37,17 @@ def main(args):
         optimizer=args.optimizer,
         intermediateResolutions=args.intermediateResolutions,
         dropout_rate=0.2,
-        dataset=dataset_hc
+        dataset=dataset_hc # for the BRAINWEB dataset, change to "dataset_hc" for normal, "pc" for lesions
     )
-
+    
     # handle additional Config parameters e.g. for GMVAE
     for arg in vars(args):
         if hasattr(config, arg):
             setattr(config, arg, getattr(args, arg))
-
+    print('PASS!!!!!!!!!!!!!!!!!!!!>>>>>>>>>>>>>>>>>>>>>>>')
     # Create an instance of the model and train it
     model = trainer(tf.Session(), config, network=network)
-
+    
     # Train it
     model.train(dataset_hc)
 
@@ -149,3 +149,5 @@ if __name__ == '__main__':
     args.add_argument('-T', '--tv_lambda', default=-1.0, type=float, help='only for GMVAE')
 
     main(args.parse_args())
+
+    # python run.py -d BRAINWEBDIR -t GMVAE -m gaussian_mixture_variational_autoencoder -E 0
